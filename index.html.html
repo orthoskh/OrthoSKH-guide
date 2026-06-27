@@ -1,0 +1,519 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head><meta charset="UTF-8"><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans,'Sarabun',sans-serif);color:var(--text-primary,#1a1a1a);background:transparent;font-size:14px}
+.header{background:var(--bg-accent,#e8f0fe);border:1px solid var(--border-accent,#4285f4);border-radius:12px;padding:0.9rem 1.1rem;margin-bottom:0.85rem}
+.header h1{font-size:16px;font-weight:600;color:var(--text-accent,#1a56db);margin-bottom:2px}
+.header p{font-size:12px;color:var(--text-secondary,#555)}
+.opd-banner{background:#e8f5e9;border:1px solid #66bb6a;border-radius:10px;padding:0.65rem 1rem;margin-bottom:0.85rem;font-size:12px;color:#2e7d32}
+.opd-banner b{font-size:13px}
+.search-box{position:relative;margin-bottom:0.65rem}
+.search-box input{width:100%;padding:9px 14px 9px 38px;font-size:14px;border:1px solid #ccc;border-radius:8px;background:var(--surface-2,#f9f9f9);color:var(--text-primary,#1a1a1a)}
+.search-box input:focus{outline:none;border-color:#4285f4;box-shadow:0 0 0 2px #e8f0fe}
+.si{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:#888;font-size:15px}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:0.65rem}
+.tag{padding:3px 11px;border-radius:20px;font-size:12px;cursor:pointer;border:1px solid #ddd;background:#f5f5f5;color:#555;transition:all 0.12s}
+.tag.active{background:#e8f0fe;color:#1a56db;border-color:#4285f4}
+.results{display:flex;flex-direction:column;gap:5px}
+.ri{background:#f9f9f9;border:1px solid #e0e0e0;border-radius:9px;padding:0.7rem 0.9rem;cursor:pointer;transition:all 0.12s}
+.ri:hover{border-color:#4285f4;background:#f0f4ff}
+.ri-dx{font-size:13px;font-weight:600}
+.ri-sub{font-size:11px;color:#777;margin-top:2px}
+.badge{display:inline-flex;align-items:center;padding:1px 7px;border-radius:12px;font-size:10px;margin-left:5px;font-weight:500}
+.b-upper{background:#e3f2fd;color:#1565c0}
+.b-lower{background:#e8f5e9;color:#2e7d32}
+.b-admit{background:#ffebee;color:#c62828}
+.detail{display:none;padding-bottom:1rem}
+.detail.open{display:block}
+.back{font-size:12px;color:#1a56db;cursor:pointer;display:flex;align-items:center;gap:3px;margin-bottom:0.85rem;background:none;border:none;padding:0}
+.dx-title{font-size:18px;font-weight:600;margin-bottom:2px}
+.dx-sub{font-size:12px;color:#666;margin-bottom:0.75rem}
+.divider{height:1px;background:#eee;margin:0.75rem 0}
+.sec-label{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:#999;font-weight:600;margin-bottom:5px}
+.immob-card{background:#e8f0fe;border:1px solid #4285f4;border-radius:8px;padding:0.8rem 0.9rem}
+.immob-title{font-size:14px;font-weight:600;color:#1a56db;margin-bottom:3px}
+.immob-body{font-size:12px;color:#444;line-height:1.65}
+.immob-meta{margin-top:7px;font-size:11px;color:#555;display:flex;gap:14px;flex-wrap:wrap}
+.diagram-wrap{background:#f5f5f5;border:1px solid #ddd;border-radius:8px;padding:0.65rem;margin-top:0.65rem;text-align:center}
+.diagram-cap{font-size:10px;color:#888;margin-top:5px}
+.reduce-box{background:#fff8e1;border:1px solid #ffb300;border-radius:8px;padding:0.7rem 0.85rem;margin-top:0.5rem}
+.reduce-title{font-size:12px;font-weight:600;color:#e65100;margin-bottom:3px}
+.reduce-body{font-size:12px;color:#555;line-height:1.6}
+.advise-list{list-style:none;display:flex;flex-direction:column;gap:4px}
+.advise-list li{font-size:12px;color:#333;line-height:1.6;display:flex;gap:7px}
+.advise-list li::before{content:"•";color:#1a56db;font-weight:bold;flex-shrink:0}
+.opd-box{background:#e8f5e9;border:1px solid #66bb6a;border-radius:8px;padding:0.7rem 0.85rem}
+.opd-label{font-size:11px;font-weight:600;color:#2e7d32}
+.opd-val{font-size:13px;color:#1a1a1a;margin-top:2px}
+.opd-next{font-size:11px;color:#388e3c;margin-top:3px}
+.admit-box{background:#ffebee;border:1px solid #ef9a9a;border-radius:8px;padding:0.7rem 0.85rem}
+.admit-label{font-size:11px;font-weight:600;color:#c62828}
+.admit-val{font-size:12px;color:#333;line-height:1.6;margin-top:2px}
+.er-box{background:#ffebee;border:1px solid #e53935;border-radius:8px;padding:0.7rem 0.85rem;margin-top:0.4rem}
+.er-label{font-size:11px;font-weight:600;color:#b71c1c;margin-bottom:5px}
+.empty{text-align:center;padding:2rem;color:#aaa;font-size:13px}
+.nv-pill{display:inline-block;background:#fff3e0;border:1px solid #ff9800;border-radius:6px;font-size:11px;color:#e65100;padding:2px 8px;margin-bottom:5px}
+</style></head>
+<body>
+
+<div class="header">
+  <h1>🦴 Ortho Fracture Guide — รพ.สีคิ้ว</h1>
+  <p>สำหรับแพทย์เวชปฏิบัติทั่วไป · ER นอกเวลาราชการ</p>
+</div>
+<div class="opd-banner" id="opd-banner">📅 <b>OPD Ortho: วันจันทร์ &amp; พฤหัสบดี</b> · กำลังคำนวณวันนัดที่ใกล้ที่สุด...</div>
+
+<div id="list-view">
+  <div class="search-box">
+    <span class="si">🔍</span>
+    <input type="text" id="search-input" placeholder="พิมพ์ชื่อกระดูกหัก เช่น Colles, Ankle, Femur..." oninput="filterDx()">
+  </div>
+  <div class="tags">
+    <div class="tag active" onclick="setFilter('all',this)">ทั้งหมด</div>
+    <div class="tag" onclick="setFilter('finger',this)">Finger/Toe</div>
+    <div class="tag" onclick="setFilter('hand',this)">Hand/Wrist</div>
+    <div class="tag" onclick="setFilter('forearm',this)">Forearm</div>
+    <div class="tag" onclick="setFilter('elbow',this)">Elbow</div>
+    <div class="tag" onclick="setFilter('shoulder',this)">Humerus/Shoulder</div>
+    <div class="tag" onclick="setFilter('lower',this)">Lower Limb</div>
+  </div>
+  <div class="results" id="results"></div>
+</div>
+
+<div class="detail" id="detail">
+  <button class="back" onclick="goBack()">← กลับ</button>
+  <div id="detail-content"></div>
+</div>
+
+<script>
+// ---- OPD date calculator ----
+function getNextOPD(){
+  const now=new Date();
+  const day=now.getDay(); // 0=Sun,1=Mon,...,4=Thu
+  let next1=new Date(now),next4=new Date(now);
+  // next Monday
+  let d1=(1-day+7)%7; if(d1===0)d1=7;
+  next1.setDate(now.getDate()+d1);
+  // next Thursday
+  let d4=(4-day+7)%7; if(d4===0)d4=7;
+  next4.setDate(now.getDate()+d4);
+  const fmt=d=>{const dd=['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'][d.getDay()];return dd+' '+(d.getDate())+'/'+(d.getMonth()+1)+'/'+(d.getFullYear()+543)};
+  const a=next1<next4?next1:next4;
+  const b=next1<next4?next4:next1;
+  return{soon:fmt(a),later:fmt(b)};
+}
+const opd=getNextOPD();
+document.getElementById('opd-banner').innerHTML=`📅 <b>OPD Ortho: วันจันทร์ &amp; พฤหัสบดี</b> · นัดได้ที่ <b>${opd.soon}</b> หรือ ${opd.later}`;
+
+// ---- SVG diagrams ----
+const D={
+  alum_L:`<svg viewBox="0 0 220 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:200px">
+    <rect x="20" y="10" width="24" height="72" rx="5" fill="#bbdefb" stroke="#1565c0" stroke-width="1.5"/>
+    <rect x="20" y="74" width="80" height="22" rx="5" fill="#bbdefb" stroke="#1565c0" stroke-width="1.5"/>
+    <text x="32" y="48" font-size="9" fill="#0d47a1" text-anchor="middle">ลำนิ้ว</text>
+    <text x="60" y="90" font-size="9" fill="#0d47a1" text-anchor="middle">ใต้ปลายนิ้ว</text>
+    <text x="115" y="35" font-size="9" fill="#333">รูปตัว L</text>
+    <text x="115" y="47" font-size="9" fill="#333">วาง volar</text>
+    <text x="115" y="59" font-size="9" fill="#333">DIP 0° ext</text>
+  </svg>`,
+  buddy:`<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:200px">
+    <rect x="15" y="8" width="26" height="76" rx="8" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5"/>
+    <rect x="47" y="8" width="26" height="76" rx="8" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5"/>
+    <rect x="41" y="8" width="10" height="76" rx="0" fill="#c8e6c9" opacity="0.85"/>
+    <rect x="17" y="24" width="54" height="7" rx="3" fill="#ef9a9a" stroke="#c62828" stroke-width="1"/>
+    <rect x="17" y="58" width="54" height="7" rx="3" fill="#ef9a9a" stroke="#c62828" stroke-width="1"/>
+    <text x="80" y="30" font-size="9" fill="#c62828">tape</text>
+    <text x="80" y="62" font-size="9" fill="#c62828">tape</text>
+    <text x="44" y="50" font-size="9" fill="#2e7d32" text-anchor="middle">gauze</text>
+    <text x="28" y="96" font-size="8" fill="#f57f17" text-anchor="middle">หัก</text>
+    <text x="60" y="96" font-size="8" fill="#f57f17" text-anchor="middle">ข้าง</text>
+  </svg>`,
+  james:`<svg viewBox="0 0 240 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:220px">
+    <rect x="10" y="60" width="80" height="18" rx="5" fill="#bbdefb" stroke="#1565c0" stroke-width="1.5"/>
+    <rect x="18" y="18" width="15" height="58" rx="5" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.2"/>
+    <rect x="37" y="18" width="15" height="58" rx="5" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.2"/>
+    <rect x="56" y="18" width="15" height="58" rx="5" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.2"/>
+    <path d="M18,76 Q18,92 25,95" stroke="#1565c0" stroke-width="1.2" fill="none"/>
+    <path d="M37,76 Q37,89 44,92" stroke="#1565c0" stroke-width="1.2" fill="none"/>
+    <path d="M56,76 Q56,89 63,92" stroke="#1565c0" stroke-width="1.2" fill="none"/>
+    <text x="115" y="35" font-size="9" fill="#333">James Position</text>
+    <text x="115" y="48" font-size="9" fill="#333">(Intrinsic plus)</text>
+    <text x="115" y="62" font-size="9" fill="#0d47a1">MCP 70–90° flex</text>
+    <text x="115" y="74" font-size="9" fill="#0d47a1">IP joints 0°</text>
+    <text x="115" y="86" font-size="9" fill="#c62828">⚠ ห้าม MCP straight</text>
+  </svg>`,
+  thumb_spica:`<svg viewBox="0 0 240 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:220px">
+    <rect x="10" y="45" width="85" height="18" rx="5" fill="#b2dfdb" stroke="#00695c" stroke-width="1.5"/>
+    <rect x="10" y="63" width="85" height="32" rx="0" fill="#e0f2f1" stroke="#00695c" stroke-width="1"/>
+    <rect x="52" y="12" width="20" height="48" rx="8" fill="#80cbc4" stroke="#00695c" stroke-width="1.5"/>
+    <text x="62" y="8" font-size="9" fill="#00695c" text-anchor="middle">thumb</text>
+    <text x="115" y="40" font-size="9" fill="#333">Thumb spica</text>
+    <text x="115" y="52" font-size="9" fill="#0d47a1">wrist neutral</text>
+    <text x="115" y="64" font-size="9" fill="#0d47a1">thumb abducted</text>
+    <text x="115" y="76" font-size="9" fill="#0d47a1">ถึง IP นิ้วโป้ง</text>
+  </svg>`,
+  short_arm_volar:`<svg viewBox="0 0 240 110" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:220px">
+    <rect x="10" y="35" width="130" height="42" rx="8" fill="#bbdefb" stroke="#1565c0" stroke-width="1.5"/>
+    <text x="75" y="28" font-size="9" fill="#1565c0" text-anchor="middle">Short arm volar slab</text>
+    <text x="75" y="60" font-size="9" fill="#0d47a1" text-anchor="middle">MCP crease → proximal forearm</text>
+    <text x="75" y="72" font-size="9" fill="#0d47a1" text-anchor="middle">wrist neutral</text>
+  </svg>`,
+  short_arm_ap:`<svg viewBox="0 0 240 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:220px">
+    <rect x="10" y="35" width="130" height="45" rx="8" fill="#bbdefb" stroke="#1565c0" stroke-width="1.5"/>
+    <rect x="10" y="35" width="130" height="22" rx="8" fill="#90caf9" stroke="#1565c0" stroke-width="1.5"/>
+    <text x="75" y="26" font-size="9" fill="#1565c0" text-anchor="middle">Short arm AP slab</text>
+    <text x="75" y="48" font-size="9" fill="#0d47a1" text-anchor="middle">(anterior + posterior)</text>
+    <text x="75" y="65" font-size="9" fill="#0d47a1" text-anchor="middle">wrist neutral</text>
+    <text x="75" y="77" font-size="9" fill="#c62828" text-anchor="middle">ประกบ 2 ด้าน</text>
+  </svg>`,
+  long_arm:`<svg viewBox="0 0 260 120" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:240px">
+    <rect x="10" y="30" width="200" height="45" rx="8" fill="#ffe0b2" stroke="#e65100" stroke-width="1.5"/>
+    <line x1="110" y1="30" x2="110" y2="75" stroke="#e65100" stroke-width="1" stroke-dasharray="3,3"/>
+    <text x="60" y="22" font-size="9" fill="#e65100" text-anchor="middle">upper arm</text>
+    <text x="160" y="22" font-size="9" fill="#e65100" text-anchor="middle">forearm/wrist</text>
+    <text x="105" y="57" font-size="9" fill="#bf360c" text-anchor="middle">elbow 90°</text>
+    <text x="105" y="95" font-size="9" fill="#e65100" text-anchor="middle">Long arm posterior slab</text>
+  </svg>`,
+  u_slab:`<svg viewBox="0 0 240 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:220px">
+    <path d="M60,10 Q100,10 120,50 Q130,70 120,115 Q100,135 60,135 Q40,135 30,115 Q20,70 30,50 Q40,10 60,10 Z" fill="none" stroke="#90a4ae" stroke-width="1.5" stroke-dasharray="5,3"/>
+    <rect x="22" y="28" width="18" height="88" rx="5" fill="#cfd8dc" stroke="#546e7a" stroke-width="1.5"/>
+    <rect x="100" y="28" width="18" height="88" rx="5" fill="#cfd8dc" stroke="#546e7a" stroke-width="1.5"/>
+    <rect x="22" y="108" width="96" height="16" rx="5" fill="#cfd8dc" stroke="#546e7a" stroke-width="1.5"/>
+    <text x="70" y="80" font-size="9" fill="#37474f" text-anchor="middle">U-slab</text>
+    <text x="145" y="50" font-size="9" fill="#333">Coaptation</text>
+    <text x="145" y="62" font-size="9" fill="#0d47a1">axilla → lateral</text>
+    <text x="145" y="74" font-size="9" fill="#0d47a1">arm → shoulder</text>
+    <text x="145" y="86" font-size="9" fill="#555">gravity align</text>
+    <text x="145" y="98" font-size="9" fill="#555">+ arm sling</text>
+  </svg>`,
+  arm_sling:`<svg viewBox="0 0 220 110" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:200px">
+    <ellipse cx="80" cy="45" rx="38" ry="22" fill="#ffcdd2" stroke="#c62828" stroke-width="1.5"/>
+    <text x="80" y="49" font-size="9" fill="#b71c1c" text-anchor="middle">forearm + elbow</text>
+    <path d="M42,45 Q28,65 48,82 Q68,96 112,82 Q132,65 118,45" fill="#ef9a9a" stroke="#c62828" stroke-width="1.5" fill-opacity="0.35"/>
+    <line x1="42" y1="45" x2="28" y2="22" stroke="#c62828" stroke-width="1.5"/>
+    <line x1="118" y1="45" x2="132" y2="22" stroke="#c62828" stroke-width="1.5"/>
+    <line x1="28" y1="22" x2="132" y2="22" stroke="#c62828" stroke-width="1.5"/>
+    <text x="80" y="17" font-size="9" fill="#c62828" text-anchor="middle">คล้องคอ</text>
+    <text x="80" y="105" font-size="9" fill="#555" text-anchor="middle">Arm sling — elbow 90°</text>
+  </svg>`,
+  long_leg:`<svg viewBox="0 0 240 150" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:220px">
+    <rect x="20" y="10" width="28" height="110" rx="6" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1.5"/>
+    <rect x="20" y="112" width="110" height="22" rx="6" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1.5"/>
+    <text x="34" y="6" font-size="9" fill="#2e7d32" text-anchor="middle">leg</text>
+    <text x="75" y="129" font-size="9" fill="#1b5e20" text-anchor="middle">foot 90° neutral</text>
+    <text x="155" y="40" font-size="9" fill="#555">Long leg</text>
+    <text x="155" y="52" font-size="9" fill="#555">posterior slab</text>
+    <text x="155" y="66" font-size="9" fill="#0d47a1">groin → MTP</text>
+    <text x="155" y="78" font-size="9" fill="#0d47a1">knee 10° flex</text>
+    <text x="155" y="90" font-size="9" fill="#0d47a1">ankle 90°</text>
+  </svg>`,
+  short_leg:`<svg viewBox="0 0 240 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:220px">
+    <rect x="20" y="20" width="28" height="80" rx="6" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1.5"/>
+    <rect x="20" y="92" width="110" height="22" rx="6" fill="#a5d6a7" stroke="#2e7d32" stroke-width="1.5"/>
+    <text x="34" y="16" font-size="9" fill="#2e7d32" text-anchor="middle">leg</text>
+    <text x="75" y="109" font-size="9" fill="#1b5e20" text-anchor="middle">foot 90° neutral</text>
+    <text x="155" y="40" font-size="9" fill="#555">Short leg</text>
+    <text x="155" y="52" font-size="9" fill="#555">posterior slab</text>
+    <text x="155" y="66" font-size="9" fill="#0d47a1">tibial tuberosity</text>
+    <text x="155" y="78" font-size="9" fill="#0d47a1">→ metatarsal head</text>
+    <text x="155" y="90" font-size="9" fill="#0d47a1">ankle 90° neutral</text>
+  </svg>`,
+  buddy_toe:`<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:200px">
+    <rect x="15" y="10" width="24" height="70" rx="7" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5"/>
+    <rect x="45" y="10" width="24" height="70" rx="7" fill="#fff9c4" stroke="#f9a825" stroke-width="1.5"/>
+    <rect x="39" y="10" width="10" height="70" rx="0" fill="#c8e6c9" opacity="0.85"/>
+    <rect x="17" y="25" width="50" height="6" rx="3" fill="#ef9a9a" stroke="#c62828" stroke-width="1"/>
+    <rect x="17" y="55" width="50" height="6" rx="3" fill="#ef9a9a" stroke="#c62828" stroke-width="1"/>
+    <text x="40" y="47" font-size="8" fill="#2e7d32" text-anchor="middle">gauze</text>
+    <text x="40" y="92" font-size="8" fill="#f57f17" text-anchor="middle">buddy tape นิ้วเท้า</text>
+  </svg>`,
+  skin_traction:`<svg viewBox="0 0 240 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:220px">
+    <rect x="15" y="50" width="110" height="30" rx="8" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="1.5"/>
+    <text x="70" y="68" font-size="9" fill="#4a148c" text-anchor="middle">ขา + foam/bandage</text>
+    <line x1="125" y1="65" x2="190" y2="65" stroke="#7b1fa2" stroke-width="2"/>
+    <rect x="185" y="55" width="15" height="20" rx="3" fill="#ce93d8" stroke="#6a1b9a" stroke-width="1.2"/>
+    <text x="192" y="88" font-size="8" fill="#6a1b9a" text-anchor="middle">2 kg</text>
+    <text x="100" y="30" font-size="9" fill="#4a148c" text-anchor="middle">Skin traction</text>
+    <text x="100" y="110" font-size="9" fill="#555" text-anchor="middle">Bed rest + 2 kg weight</text>
+  </svg>`,
+};
+
+// ---- Data ----
+const data=[
+// FINGER / HAND
+{id:1,cat:"finger",label:"Distal Phalanx Fx",sub:"นิ้วปล้องปลายหัก",admit:false,
+ immob:"Aluminium splint รูปตัว L (volar)",
+ immobDetail:"ดัด aluminium splint เป็นรูปตัว L · วาง volar ด้านฝ่ามือ · ส่วนสั้นครอบใต้ปลายนิ้ว · DIP 0° extension เต็ม · ไม่ใช้แบบหนีบหรือ dorsal · ยึดด้วย paper tape หรือ coban",
+ dKey:"alum_L",dCap:"Aluminium L-shape volar splint — DIP 0° extension",
+ reduce:null,nv:false,
+ advise:["ใส่ splint ตลอดเวลา ห้ามถอด","เวลาเปลี่ยน splint วางนิ้วบนโต๊ะราบ ห้ามให้ DIP งอ","ยกมือสูงลดบวม","ขยับ PIP joint ได้ตามปกติ"],
+ opd:true,er:["Open fracture","Subungual hematoma >50% (ระบาย + cover)"]},
+
+{id:2,cat:"finger",label:"Middle Phalanx Fx",sub:"นิ้วปล้องกลางหัก",admit:false,
+ immob:"Buddy taping (เป็นหลัก) หรือ Aluminium splint — เลือกอย่างใดอย่างหนึ่ง",
+ immobDetail:"<b>Buddy taping:</b> ใส่ gauze คั่นระหว่างนิ้วก่อนเสมอ ถึงโคนนิ้ว → tape นิ้วที่หักกับนิ้วข้างเคียง 2 จุด (proximal + middle phalanx) ห้ามปิด tape ทับข้อ<br><b>หรือ Aluminium splint:</b> วาง volar ดาม PIP 0° straight ถึง proximal phalanx<br><i>ไม่ใส่ทั้งสองอย่างพร้อมกัน</i>",
+ dKey:"buddy",dCap:"Buddy taping — ต้องใส่ gauze คั่นนิ้วก่อนเสมอ ถึงโคนนิ้ว",
+ reduce:null,nv:false,
+ advise:["ใส่ gauze คั่นนิ้วก่อนทุกครั้งก่อน tape","ขยับนิ้วที่ tape ร่วมกันได้เบาๆ","ยกมือสูงกว่าระดับหัวใจ","ถ้านิ้วบิดหรือผิดรูป มาพบแพทย์ก่อนนัด"],
+ opd:true,er:["Rotational deformity","Intra-articular / condylar fracture","Volar plate avulsion ที่ PIP"]},
+
+{id:3,cat:"finger",label:"Proximal Phalanx Fx (2nd–3rd)",sub:"นิ้วปล้องแรกหัก นิ้วชี้/กลาง",admit:false,
+ immob:"Buddy splint + Radial gutter slab",
+ immobDetail:"James position (intrinsic plus): MCP 70–90° flex + IP joints 0° straight · Radial gutter slab ด้าน radial ครอบ 2nd–3rd · Buddy tape นิ้วข้างเคียง + ใส่ gauze คั่นก่อนเสมอ",
+ dKey:"james",dCap:"James position — MCP 70–90°, IP joints 0° straight (intrinsic plus)",
+ reduce:null,nv:false,
+ advise:["ใส่ gauze คั่นนิ้วก่อนทุกครั้งก่อน buddy tape","MCP ต้องงอ 70–90° เสมอ ห้ามให้ straight","ยกมือสูง","ถ้านิ้วบิด มาก่อนนัด"],
+ opd:true,er:["Rotational deformity","Displaced intra-articular fracture"]},
+
+{id:4,cat:"finger",label:"Proximal Phalanx Fx (4th–5th)",sub:"นิ้วปล้องแรกหัก นิ้วนาง/ก้อย",admit:false,
+ immob:"Buddy splint + Ulnar gutter slab",
+ immobDetail:"James position: MCP 70–90° flex + IP joints 0° straight · Ulnar gutter slab ด้าน ulnar ครอบ 4th–5th · Buddy tape นิ้วข้างเคียง + ใส่ gauze คั่นก่อนเสมอ",
+ dKey:"james",dCap:"James position — MCP 70–90°, IP joints 0° (ulnar gutter)",
+ reduce:null,nv:false,
+ advise:["ใส่ gauze คั่นนิ้วก่อนทุกครั้ง","James position — ห้าม MCP straight","ยกมือสูง"],
+ opd:true,er:["Rotational deformity","Displaced intra-articular fracture"]},
+
+{id:5,cat:"finger",label:"Thumb Proximal Phalanx Fx",sub:"นิ้วโป้งปล้องแรกหัก",admit:false,
+ immob:"Thumb spica slab",
+ immobDetail:"Wrist neutral · Thumb palmar abduction · Splint ครอบตั้งแต่ proximal forearm ถึง IP joint นิ้วโป้ง",
+ dKey:"thumb_spica",dCap:"Thumb spica — wrist neutral, thumb abducted",
+ reduce:null,nv:false,
+ advise:["ใส่ splint ตลอดเวลา","ห้ามหยิบจับของด้วยนิ้วโป้ง","ยกมือสูงลดบวม"],
+ opd:true,er:["Displaced intra-articular","Bennett's / Rolando's → consult"]},
+
+{id:6,cat:"hand",label:"MC Fx (2nd–3rd)",sub:"กระดูกฝ่ามือหัก นิ้วชี้/กลาง",admit:false,
+ immob:"Radial gutter slab — James position",
+ immobDetail:"MCP 70–90° flex · IP joints 0° straight · Radial gutter slab ด้าน radial · ดาม 2 นิ้ว (นิ้วที่หัก + ข้างเคียง) · Buddy tape + gauze คั่นนิ้วก่อนเสมอ",
+ dKey:"james",dCap:"James position (intrinsic plus) — MCP 70–90°, IP joints 0°",
+ reduce:null,nv:false,
+ advise:["ยกมือสูงกว่าระดับหัวใจ","ขยับนิ้วที่ไม่ได้ดาม","ห้ามกำหมัดแน่น","ถ้านิ้วบิด มา ER ทันที"],
+ opd:true,er:["Rotational deformity","Angulation >10° (2nd–3rd)","Open fracture / fight bite"]},
+
+{id:7,cat:"hand",label:"MC Fx (4th–5th) / Boxer's",sub:"กระดูกฝ่ามือหัก นิ้วนาง/ก้อย",admit:false,
+ immob:"Ulnar gutter slab — James position",
+ immobDetail:"MCP 70–90° flex · IP joints 0° straight · Ulnar gutter slab ด้าน ulnar ครอบ 4th–5th · Buddy tape + gauze คั่นนิ้วก่อนเสมอ",
+ dKey:"james",dCap:"James position — Ulnar gutter, 4th–5th finger",
+ reduce:null,nv:false,
+ advise:["ยกมือสูงลดบวม","ขยับนิ้วชี้–กลาง","ห้ามชกหรือกำหมัด","ถ้านิ้วบิด มา ER"],
+ opd:true,er:["Angulation >40° (5th neck)","Rotational deformity","Fight bite → IV Abx + wash"]},
+
+{id:8,cat:"hand",label:"Carpal Bone Fx (incl. Scaphoid)",sub:"กระดูกข้อมือหัก รวม Scaphoid",admit:false,
+ immob:"Short arm volar slab",
+ immobDetail:"Wrist neutral · Splint ด้าน volar จาก MCP crease ถึง proximal forearm · Scaphoid: ต่อ thumb spica ถึง IP นิ้วโป้ง · X-ray ปกติ ≠ ไม่หัก → ส่ง CT wrist ยืนยัน",
+ dKey:"short_arm_volar",dCap:"Short arm volar slab — wrist neutral",
+ reduce:null,nv:false,
+ advise:["ใส่ splint ตลอดเวลา","X-ray ปกติไม่ได้แปลว่าไม่หัก ต้อง CT ยืนยัน (scaphoid)","ห้ามยกของหนัก","ถ้าปวดมากขึ้น มา ER"],
+ opd:true,er:["Displaced scaphoid / proximal pole → consult","Perilunate / lunate dislocation → ฉุกเฉิน"]},
+
+{id:9,cat:"hand",label:"Distal Radius Fx",sub:"กระดูก radius ปลายหัก (Colles'/Smith's/ชนิดอื่น)",admit:false,
+ immob:"Short arm AP slab (anterior + posterior)",
+ immobDetail:"Close reduction ให้ bone เกยกัน ก่อนใส่ slab · Wrist neutral · ประกบ slab 2 ด้าน (anterior + posterior) จาก MCP crease ถึง proximal forearm · นิ้วต้องโล่งทุกนิ้ว · Definitive cast จะใส่ที่ OPD ortho",
+ dKey:"short_arm_ap",dCap:"Short arm AP slab (2 ด้าน) — wrist neutral",
+ reduce:{title:"Close Reduction — Distal Radius",body:"1. ฉีด hematoma block (1% lidocaine 5–10 ml เข้า fracture site)<br>2. ดึง traction แกน forearm ค้างไว้<br>3. Colles': กด dorsal fragment ลง + ulnar deviation<br>4. Smith's: ดัน volar fragment ขึ้น + supination<br>5. X-ray ยืนยัน bone เกยกัน แล้วใส่ AP slab"},
+ nv:true,
+ advise:["ยกแขนสูงกว่าระดับหัวใจตลอดเวลา โดยเฉพาะ 48 ชม. แรก","ขยับนิ้วทุกๆ 1–2 ชม.","ห้ามเปียกน้ำ หรือดัดแปลง slab","ถ้า slab รัด ชานิ้ว บวมมาก มา ER ทันที","Definitive cast จะทำที่ OPD ortho"],
+ opd:true,er:["Compartment syndrome: ปวดมาก ชานิ้ว สีเปลี่ยน","Neurovascular compromise","Open fracture"]},
+
+// FOREARM
+{id:10,cat:"forearm",label:"Forearm Fx (Both bone / Galeazzi / Monteggia)",sub:"กระดูก forearm หัก",admit:false,
+ immob:"Long arm posterior slab",
+ immobDetail:"Close reduction ให้ bone เกยกัน (length) ก่อนใส่ slab · Elbow 90° · Forearm neutral rotation · Splint posterior จาก axilla ถึง MCP · Galeazzi: ตรวจ DRUJ / Monteggia: ตรวจ radial head · X-ray ยืนยัน",
+ dKey:"long_arm",dCap:"Long arm posterior slab — elbow 90°, forearm neutral",
+ reduce:{title:"Close Reduction — Forearm Fx",body:"เน้น restore length (bone เกยกัน) · Galeazzi: supination + reduce DRUJ · Monteggia: reduce radial head ก่อน elbow 90–110° · X-ray ยืนยัน alignment"},
+ nv:true,
+ advise:["ใส่ sling ค้ำ slab ตลอดเวลา","ยกแขนสูง","ห้ามพลิกข้อมือ","ขยับนิ้วสม่ำเสมอ","Definitive treatment จะคุยที่ OPD"],
+ opd:true,er:["Compartment syndrome: ปวดมาก passive stretch นิ้วเจ็บ","Neurovascular compromise","Open fracture"]},
+
+// ELBOW
+{id:11,cat:"elbow",label:"Elbow Dislocation",sub:"ข้อศอกเคลื่อน · Posterior (พบบ่อยที่สุด)",admit:false,
+ immob:"Long arm posterior slab หลัง reduction",
+ immobDetail:"ตรวจ NV ก่อน reduce → close reduction → ตรวจ NV หลัง → X-ray ยืนยัน → splint elbow 90° forearm neutral · ไม่ immobilize นานเกิน 1–2 สัปดาห์",
+ dKey:"long_arm",dCap:"Long arm posterior slab — elbow 90°, forearm neutral",
+ reduce:{title:"Close Reduction — Elbow Dislocation",body:"ตรวจ NV ก่อน → sedation / analgesia → traction แกนแขน + flex elbow ค่อยๆ → คลำ olecranon กลับเข้าที่ → ตรวจ NV หลัง reduce → X-ray ยืนยัน"},
+ nv:true,
+ advise:["ใส่ sling ค้ำ slab ตลอดเวลา","ขยับนิ้วและข้อมือได้","ห้ามเหยียดข้อศอกเองก่อนแพทย์อนุญาต","ถ้าชามือหรือข้อศอกผิดรูปใหม่ มา ER ทันที"],
+ opd:true,er:["Reduce ไม่ได้","Terrible triad (+ radial head Fx + coronoid Fx)","Neurovascular injury หลัง reduce","Open dislocation"]},
+
+{id:12,cat:"elbow",label:"Distal Humerus Fx",sub:"กระดูกข้อศอกหัก (condyle/supracondylar)",admit:"บวมมาก → admit observe compartment syndrome",
+ immob:"Long arm posterior slab",
+ immobDetail:"ตรวจ NV ก่อน → close reduction → ตรวจ NV หลัง → X-ray ยืนยัน → slab elbow 90° forearm neutral · ถ้าบวมมาก admit observe compartment syndrome",
+ dKey:"long_arm",dCap:"Long arm posterior slab — elbow 90°",
+ reduce:{title:"Close Reduction — Distal Humerus",body:"ตรวจ NV ก่อน reduce → traction + correct rotation → elbow 90° → ตรวจ NV หลัง → X-ray · ถ้า displaced มาก / unstable → long arm slab + admit"},
+ nv:true,
+ advise:["ยกแขนสูงมาก ลดบวม","ขยับนิ้วสม่ำเสมอ","ถ้าปลายมือชา เย็น ซีด มา ER ทันที"],
+ opd:true,er:["Compartment syndrome","Neurovascular injury: brachial artery, radial/median/ulnar nerve","Open fracture"]},
+
+// HUMERUS / SHOULDER
+{id:13,cat:"shoulder",label:"Humerus Shaft Fx",sub:"กระดูกต้นแขนลำตัวหัก · ระวัง radial nerve!",admit:false,
+ immob:"U-slab (Coaptation) + Arm sling",
+ immobDetail:"ตรวจ wrist extension / radial nerve ก่อน → U-slab (coaptation): ผ้าพลาสเตอร์รูปตัว U จาก axilla วนรอบ lateral arm ถึง shoulder → ทับด้วย arm sling · gravity ช่วย align · ตรวจ radial nerve ก่อนและหลัง",
+ dKey:"u_slab",dCap:"Coaptation U-slab + arm sling — gravity alignment",
+ reduce:null,nv:true,nvNote:"ตรวจ radial nerve ก่อนและหลัง reduction: wrist extension, finger extension, sensation dorsal web 1st",
+ advise:["นั่งหรือยืนให้ gravity จัดแนวกระดูก","ขยับนิ้วและข้อมือสม่ำเสมอ","ถ้าข้อมือตก (wrist drop) แจ้งแพทย์ทันที — บันทึก baseline ไว้ด้วย","ใส่ sling และ coaptation ตลอดเวลา"],
+ opd:true,er:["Vascular injury: มือเย็น ซีด ชีพจรหาย → ฉุกเฉิน","Open fracture","Pathological fracture"]},
+
+{id:14,cat:"shoulder",label:"Proximal Humerus Fx",sub:"ต้นแขนส่วนบนหัก",admit:false,
+ immob:"Arm sling",
+ immobDetail:"Arm sling ข้อศอก 90° · ตรวจ axillary nerve (ชาบ่าด้านข้าง) · ไม่ต้องใส่ body bandage ทุกเคส",
+ dKey:"arm_sling",dCap:"Arm sling — elbow 90°",
+ reduce:null,nv:true,nvNote:"ตรวจ axillary nerve: sensation lateral shoulder / deltoid strength",
+ advise:["ใส่ sling ตลอดเวลา แม้ขณะนอน 2–3 วันแรก","ขยับนิ้วและข้อมือได้","ห้ามยกของหนักหรือเหวี่ยงแขน","นอนหนุนหมอนรองแขน"],
+ opd:true,er:["Vascular injury","4-part fracture (AVN risk)"]},
+
+{id:15,cat:"shoulder",label:"Clavicle Fx / Distal Clavicle / AC Joint",sub:"ไหปลาร้าหัก และข้อ AC เคลื่อน",admit:false,
+ immob:"Arm sling",
+ immobDetail:"Arm sling ข้อศอก 90° · ตรวจ BPI (brachial plexus) และ skin tenting ทุกเคส · AC grade I–II: conservative · AC grade IV–VI: consult ortho · ไม่จำเป็นต้อง figure-of-8",
+ dKey:"arm_sling",dCap:"Arm sling — ตรวจ neurovascular + ระวัง skin tenting",
+ reduce:null,nv:true,nvNote:"ตรวจ BPI: sensation + motor upper extremity / ดู skin tenting (ปลายกระดูกดันผิวหนัง)",
+ advise:["ใส่ sling ตลอดเวลา เว้นอาบน้ำ","ห้ามยกแขนเกินระดับไหล่","ขยับนิ้วและข้อมือได้","ถ้าผิวหนังตึงมากขึ้น หรือชาแขน มา ER"],
+ opd:true,er:["Skin tenting (ปลายกระดูกดันผิวหนังมาก)","Brachial plexus injury","Subclavian vessel injury","AC grade IV–VI"]},
+
+// LOWER LIMB
+{id:16,cat:"lower",label:"Neck of Femur / Intertrochanter Fx",sub:"คอกระดูกสะโพก / ระหว่าง trochanter หัก",admit:true,
+ immob:"Admit + Bed rest + Skin traction 2 kg",
+ immobDetail:"Admit ward · Bed rest · Skin traction 2 kg · Pain control · รอคุยแผนผ่าตัดที่ OPD ortho",
+ dKey:"skin_traction",dCap:"Skin traction 2 kg — bed rest",
+ reduce:null,nv:false,
+ advise:["Admit ward","Skin traction 2 kg ห้ามลงน้ำหนัก","Pain control ตามแพทย์สั่ง","รอคุยแผนผ่าตัดที่ OPD ortho"],
+ opd:false,er:["Vascular injury (rare)","Associated injuries"]},
+
+{id:17,cat:"lower",label:"Femur Shaft Fx",sub:"กระดูกต้นขาลำตัวหัก — ผ่าทุกเคส",admit:true,
+ immob:"Admit + Pain control",
+ immobDetail:"Admit ward · IV pain control · ผ่าตัดทุกเคส · แจ้งแพทย์ ortho",
+ dKey:"skin_traction",dCap:"Admit + pain control รอผ่าตัด",
+ reduce:null,nv:true,nvNote:"ตรวจ neurovascular ขาส่วนล่าง: dorsalis pedis, posterior tibial pulse, sensation",
+ advise:["Admit ward ทุกเคส","IV pain control","รอผ่าตัดกับแพทย์ ortho"],
+ opd:false,er:["ผ่าทุกเคส — แจ้งแพทย์ ortho เสมอ","Hemorrhagic shock: femur shaft เลือดออกได้ 1–1.5 L"]},
+
+{id:18,cat:"lower",label:"Distal Femur Fx",sub:"กระดูกต้นขาส่วนปลายหัก — ผ่าทุกเคส",admit:true,
+ immob:"Admit + Pain control + observe vascular",
+ immobDetail:"Admit ward · Pain control · Observe vascular injury (popliteal artery) · ผ่าตัดทุกเคส",
+ dKey:"skin_traction",dCap:"Admit + observe vascular injury",
+ reduce:null,nv:true,nvNote:"ตรวจ popliteal / dorsalis pedis / posterior tibial pulse ทุก 1–2 ชม.",
+ advise:["Admit ward","Observe vascular injury ทุก 1–2 ชม.","Pain control"],
+ opd:false,er:["ผ่าทุกเคส — แจ้งแพทย์ ortho","Vascular injury: ขาเย็น ชีพจรหาย → ฉุกเฉิน"]},
+
+{id:19,cat:"lower",label:"Tibial Plateau Fx",sub:"กระดูกหัวเข่าหัก — ผ่าทุกเคส",admit:true,
+ immob:"Long leg posterior slab + Admit",
+ immobDetail:"Long leg posterior slab · Knee 10° flex · Ankle 90° · Admit observe compartment syndrome และ vascular injury · ผ่าตัดทุกเคส",
+ dKey:"long_leg",dCap:"Long leg posterior slab — knee 10°, ankle 90°",
+ reduce:null,nv:true,nvNote:"ตรวจ compartment syndrome + vascular ทุก 1–2 ชม.",
+ advise:["Admit ward ทุกเคส","Observe compartment syndrome","Observe vascular injury"],
+ opd:false,er:["ผ่าทุกเคส — แจ้งแพทย์ ortho","Compartment syndrome","Vascular injury (popliteal)"]},
+
+{id:20,cat:"lower",label:"Tibia Shaft Fx / Both Bone Leg Fx",sub:"กระดูกหน้าแข้งหัก — ผ่าทุกเคส",admit:true,
+ immob:"Long leg posterior slab + Admit",
+ immobDetail:"Long leg posterior slab · Knee 10° flex · Ankle 90° · Admit observe compartment syndrome · ผ่าตัดทุกเคส",
+ dKey:"long_leg",dCap:"Long leg posterior slab — ระวัง compartment syndrome",
+ reduce:null,nv:true,nvNote:"ตรวจ compartment syndrome ทุก 1–2 ชม.: ปวดมาก passive stretch นิ้วเจ็บ tension compartment",
+ advise:["Admit ward ทุกเคส","Observe compartment syndrome อย่างใกล้ชิด","Pain control"],
+ opd:false,er:["ผ่าทุกเคส — แจ้งแพทย์ ortho","Compartment syndrome: fasciotomy ฉุกเฉิน","Open fracture"]},
+
+{id:21,cat:"lower",label:"Ankle Fx",sub:"ข้อเท้าหัก",admit:false,
+ immob:"Short leg posterior slab",
+ immobDetail:"Short leg posterior slab · Ankle 90° neutral · Splint จาก tibial tuberosity ถึง metatarsal head · Toe โล่ง",
+ dKey:"short_leg",dCap:"Short leg posterior slab — ankle 90° neutral",
+ reduce:null,nv:false,
+ advise:["ยกขาสูงกว่าระดับหัวใจตลอดเวลา","ห้ามลงน้ำหนัก ใช้ไม้ค้ำยัน","ขยับนิ้วเท้าได้","ถ้า slab รัด นิ้วเท้าชา บวมมาก มา ER ทันที"],
+ opd:true,er:["Compartment syndrome","Open fracture","Neurovascular compromise"]},
+
+{id:22,cat:"lower",label:"Calcaneus Fx",sub:"กระดูกส้นเท้าหัก",admit:"Beak type หรือ soft tissue injury มาก → admit observe",
+ immob:"Short leg posterior slab",
+ immobDetail:"Short leg posterior slab · Ankle 90° neutral · ยกขาสูง · Beak type: soft tissue injury risk → admit observe",
+ dKey:"short_leg",dCap:"Short leg posterior slab — ระวัง beak type → admit",
+ reduce:null,nv:false,
+ advise:["ยกขาสูงตลอดเวลา ลดบวม","ห้ามลงน้ำหนัก","ถ้า Beak type หรือบวมมาก แพทย์จะ admit","ถ้านิ้วเท้าชา มา ER"],
+ opd:true,er:["Beak type → admit observe soft tissue","Open fracture","Compartment syndrome"]},
+
+{id:23,cat:"lower",label:"Tarsal / Metatarsal Fx",sub:"กระดูกข้อเท้า/ฝ่าเท้าหัก",admit:"หักหลายนิ้วหรือบวมมาก → admit observe compartment",
+ immob:"Short leg posterior slab",
+ immobDetail:"Short leg posterior slab · Ankle 90° neutral · ถ้าหักหลายนิ้วหรือบวมมาก → admit observe compartment",
+ dKey:"short_leg",dCap:"Short leg posterior slab — ระวัง compartment ถ้าหักหลายชิ้น",
+ reduce:null,nv:false,
+ advise:["ยกขาสูงลดบวม","ห้ามลงน้ำหนัก","ถ้าบวมมากหรือหักหลายนิ้ว แพทย์จะ admit","ขยับนิ้วเท้าได้"],
+ opd:true,er:["Compartment syndrome (หักหลายชิ้น บวมมาก)","Open fracture"]},
+
+{id:24,cat:"finger",label:"Proximal Phalanx Toe Fx",sub:"กระดูกนิ้วเท้าปล้องแรกหัก",admit:false,
+ immob:"Close reduction + Buddy splint + Short leg posterior slab",
+ immobDetail:"Close reduction → Buddy tape นิ้วที่หักกับนิ้วข้างเคียง (ใส่ gauze คั่นก่อนเสมอ) → Short leg posterior slab ankle 90°",
+ dKey:"buddy_toe",dCap:"Buddy tape นิ้วเท้า + short leg posterior slab",
+ reduce:{title:"Close Reduction — Toe Fx",body:"Traction นิ้วเท้า → correct angulation/rotation → buddy tape + gauze คั่น → ใส่ short leg slab"},
+ nv:false,
+ advise:["ใส่ gauze คั่นนิ้วก่อน buddy tape เสมอ","ยกขาสูงลดบวม","ห้ามลงน้ำหนัก"],
+ opd:true,er:["Open fracture","Rotational deformity ที่แก้ไขไม่ได้"]},
+
+{id:25,cat:"finger",label:"Middle / Distal Phalanx Toe Fx",sub:"กระดูกนิ้วเท้าปล้องกลาง/ปลายหัก",admit:false,
+ immob:"Close reduction + Buddy splint",
+ immobDetail:"Close reduction → Buddy tape เท่านั้น (ใส่ gauze คั่นก่อนเสมอ) ไม่ต้องใส่ short leg slab",
+ dKey:"buddy_toe",dCap:"Buddy tape นิ้วเท้า — ใส่ gauze คั่นก่อนเสมอ",
+ reduce:{title:"Close Reduction — Toe Fx",body:"Traction นิ้วเท้า → correct angulation → buddy tape + gauze คั่น"},
+ nv:false,
+ advise:["ใส่ gauze คั่นนิ้วก่อน buddy tape เสมอ","ยกขาสูง","ลงน้ำหนักได้เล็กน้อยถ้าไม่เจ็บมาก (hard sole)"],
+ opd:true,er:["Open fracture"]},
+];
+
+const catLabel={finger:"Finger/Toe",hand:"Hand/Wrist",forearm:"Forearm",elbow:"Elbow",shoulder:"Shoulder",lower:"Lower Limb"};
+let cf="all";
+
+function setFilter(f,el){cf=f;document.querySelectorAll(".tag").forEach(t=>t.classList.remove("active"));el.classList.add("active");filterDx();}
+function filterDx(){
+  const q=document.getElementById("search-input").value.toLowerCase();
+  const r=document.getElementById("results");
+  const f=data.filter(d=>(cf==="all"||d.cat===cf)&&(!q||d.label.toLowerCase().includes(q)||d.sub.toLowerCase().includes(q)));
+  if(!f.length){r.innerHTML='<div class="empty">ไม่พบ diagnosis ที่ค้นหา</div>';return;}
+  r.innerHTML=f.map(d=>`<div class="ri" onclick="showDetail(${d.id})">
+    <div class="ri-dx">${d.label}
+      <span class="badge ${d.cat==='lower'?'b-lower':'b-upper'}">${catLabel[d.cat]||d.cat}</span>
+      ${d.admit?'<span class="badge b-admit">Admit</span>':''}
+    </div>
+    <div class="ri-sub">${d.sub}</div>
+  </div>`).join("");
+}
+
+function showDetail(id){
+  const d=data.find(x=>x.id===id);if(!d)return;
+  document.getElementById("list-view").style.display="none";
+  document.getElementById("detail").classList.add("open");
+  const nvHtml=d.nv?`<div class="nv-pill">⚠️ ตรวจ Neurovascular ก่อน และหลัง reduction ทุกครั้ง${d.nvNote?'<br><small>'+d.nvNote+'</small>':''}</div>`:"";
+  const redHtml=d.reduce?`<div class="reduce-box"><div class="reduce-title">🔧 ${d.reduce.title}</div><div class="reduce-body">${d.reduce.body}</div></div>`:"";
+  const admitHtml=typeof d.admit==="string"?`<div class="admit-box" style="margin-bottom:0.5rem"><div class="admit-label">🏥 Admit: </div><div class="admit-val">${d.admit}</div></div>`:"";
+  const opdHtml=d.opd?`<div class="opd-box"><div class="opd-label">📅 นัด OPD Orthopaedic</div><div class="opd-val">วันจันทร์ หรือ พฤหัสบดี</div><div class="opd-next">นัดใกล้ที่สุด: <b>${opd.soon}</b> หรือ ${opd.later}</div></div>`:`<div class="admit-box"><div class="admit-label">🏥 ต้อง Admit</div><div class="admit-val">${typeof d.admit==="string"?d.admit:"ผ่าตัดทุกเคส — แจ้งแพทย์ ortho"}</div></div>`;
+  const svg=D[d.dKey]||"";
+  document.getElementById("detail-content").innerHTML=`
+    <div class="dx-title">${d.label}</div>
+    <div class="dx-sub">${d.sub}</div>
+    <div class="divider"></div>
+    <div style="margin-bottom:1rem">
+      <div class="sec-label">🩹 Immobilization</div>
+      ${nvHtml}
+      <div class="immob-card">
+        <div class="immob-title">${d.immob}</div>
+        <div class="immob-body">${d.immobDetail}</div>
+        <div class="immob-meta"><span><b>ท่า:</b> ตามชนิด slab ด้านล่าง</span></div>
+      </div>
+      ${svg?`<div class="diagram-wrap">${svg}<div class="diagram-cap">${d.dCap}</div></div>`:""}
+      ${redHtml}
+    </div>
+    ${admitHtml}
+    <div style="margin-bottom:1rem">
+      <div class="sec-label">🏠 คำแนะนำผู้ป่วยกลับบ้าน</div>
+      <ul class="advise-list">${d.advise.map(a=>`<li>${a}</li>`).join("")}</ul>
+    </div>
+    <div style="margin-bottom:1rem">${opdHtml}</div>
+    <div>
+      <div class="sec-label">🚨 แจ้งแพทย์ Ortho ฉุกเฉิน (เฉพาะกรณีนี้เท่านั้น)</div>
+      <div class="er-box">
+        <div class="er-label">Emergency / Urgency จริงๆ เท่านั้น</div>
+        <ul class="advise-list">${d.er.map(e=>`<li>${e}</li>`).join("")}</ul>
+      </div>
+    </div>`;
+}
+function goBack(){
+  document.getElementById("list-view").style.display="block";
+  document.getElementById("detail").classList.remove("open");
+  document.getElementById("detail-content").innerHTML="";
+}
+filterDx();
+</script>
+</body></html>
