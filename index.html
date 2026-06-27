@@ -1,7 +1,11 @@
 
 <!DOCTYPE html>
 <html lang="th">
-<head><meta charset="UTF-8"><style>
+<head>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1976d2">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta charset="UTF-8"><style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font-sans,'Sarabun',sans-serif);color:var(--text-primary,#1a1a1a);background:transparent;font-size:14px}
 .header{background:var(--bg-accent,#e8f0fe);border:1px solid var(--border-accent,#4285f4);border-radius:12px;padding:0.9rem 1.1rem;margin-bottom:0.85rem}
@@ -515,5 +519,9 @@ function goBack(){
   document.getElementById("detail-content").innerHTML="";
 }
 filterDx();
+</script>
+<script>if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js');
+}
 </script>
 </body></html>
